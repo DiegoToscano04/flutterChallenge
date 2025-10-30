@@ -1,8 +1,8 @@
 // lib/screens/supervisor_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/pedidos_provider.dart';
 import 'package:rive/rive.dart';
+import '../providers/pedidos_provider.dart';
 
 class SupervisorScreen extends StatelessWidget {
   const SupervisorScreen({super.key});
@@ -12,8 +12,6 @@ class SupervisorScreen extends StatelessWidget {
     final pedidosProvider = Provider.of<PedidosProvider>(context);
     final todosLosPedidos = pedidosProvider.pedidos;
     final porcentaje = pedidosProvider.porcentajeCompletado;
-
-    // Condición para mostrar la vista de "Completado"
     if (porcentaje == 100.0) {
       return Center(
         child: Padding(
@@ -60,14 +58,13 @@ class SupervisorScreen extends StatelessWidget {
             fit: BoxFit.none,
           ),
         ),
-
         Card(
           margin: const EdgeInsets.fromLTRB(
             15,
             0,
             15,
             15,
-          ), // Reducimos el margen superior de la tarjeta
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -79,12 +76,20 @@ class SupervisorScreen extends StatelessWidget {
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 15),
-                LinearProgressIndicator(
-                  value: porcentaje / 100,
-                  minHeight: 12,
-                  backgroundColor: Colors.grey[200],
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue[600]!),
-                  borderRadius: BorderRadius.circular(6),
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0, end: porcentaje / 100),
+                  duration: const Duration(milliseconds: 750),
+                  builder: (context, value, child) {
+                    return LinearProgressIndicator(
+                      value: value,
+                      minHeight: 12,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.blue[600]!,
+                      ),
+                      borderRadius: BorderRadius.circular(6),
+                    );
+                  },
                 ),
                 const SizedBox(height: 10),
                 Text(
@@ -95,7 +100,6 @@ class SupervisorScreen extends StatelessWidget {
             ),
           ),
         ),
-
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.only(bottom: 10),
@@ -113,9 +117,7 @@ class SupervisorScreen extends StatelessWidget {
                     leading: CircleAvatar(
                       backgroundColor: pedido.completado
                           ? Colors.grey
-                          : Theme.of(
-                              context,
-                            ).colorScheme.primary, // Azul del tema
+                          : Theme.of(context).colorScheme.primary,
                       child: Icon(
                         pedido.completado ? Icons.check : Icons.inventory_2,
                         color: Colors.white,
